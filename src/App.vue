@@ -39,6 +39,13 @@ function drop(ev: DragEvent) {
 }
 
 const shownTags = ["row_index", "current_url"];
+
+const filters = ref(new Set(['info', 'error', 'warn']));
+
+function toggleFilter(filter: string) {
+    if (filters.value.has(filter)) filters.value.delete(filter);
+    else filters.value.add(filter);
+}
 </script>
 
 <template>
@@ -47,7 +54,13 @@ const shownTags = ["row_index", "current_url"];
         <div class="w-100 h-100 bg-gray-300" @drop="drop" ref="dropZone"></div>
     </div>
     <div v-else>
-        <div v-for="line in jsonl" class="p-2 even:bg-gray-100 whitespace-pre-wrap">
+        <div class="flex gap-2 p-2 items-center">
+            <div class="filter" :class="{selected: filters.has('info')}" @click="toggleFilter('info')">Info</div>
+            <div class="filter" :class="{selected: filters.has('warn')}" @click="toggleFilter('warn')">Warn</div>
+            <div class="filter" :class="{selected: filters.has('error')}" @click="toggleFilter('error')">Error</div>
+            <span>Duplicate Jobs: {{jsonl.filter(l => l.message == "crawler.crawler.duplicate_job").length}}</span>
+        </div>
+        <div v-for="line in jsonl.filter(l => filters.has(l.attributes.level))" class="p-2 even:bg-gray-100 whitespace-pre-wrap">
             <span class="rounded-full p-1" :class="{
                 'bg-green-500': line.attributes.level == 'info',
                 'bg-red-500': line.attributes.level == 'error',
@@ -70,5 +83,11 @@ const shownTags = ["row_index", "current_url"];
 a {
     text-decoration: underline;
     @apply text-blue-300;
+}
+.filter {
+    @apply rounded-full bg-gray-300 p-1 cursor-pointer;
+    &.selected {
+        @apply bg-blue-300;
+    }
 }
 </style>
