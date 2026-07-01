@@ -65,8 +65,8 @@ function toggleFilter(filter: string) {
                 'bg-green-500': line.attributes.level == 'info',
                 'bg-red-500': line.attributes.level == 'error',
                 'bg-yellow-500': line.attributes.level == 'warn',
-            }">{{line.attributes.level}}</span> {{line.message.split("Backtrace")[0]}}
-            <span v-if="line.attributes.exception_message" class="text-red-500">{{line.attributes.exception_message}}</span>
+            }">{{line.attributes.level}}</span> {{line.message}}
+            <span v-if="line.attributes.exception_message" class="text-red-500" :class="{'font-mono': line.attributes.exception_message.includes('Backtrace')}">{{line.attributes.exception_message.split("Backtrace")[0]}}</span>
             <span v-if="line.attributes.backtrace" class="text-sm text-gray-500">{{ line.attributes.backtrace }}</span>
             <template v-for="tag of shownTags">
                 <div v-if="tag in line.attributes?.named_tags" class="text-sm text-gray-500">
